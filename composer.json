@@ -1,0 +1,26 @@
+{
+    "name": "jinya/pdox",
+    "description": "Jinya PDOx is a simple object mapper built around PHPs standard PDO",
+    "type": "library",
+    "require-dev": {
+        "phpstan/phpstan": "0.12.93",
+        "vimeo/psalm": "4.8.1",
+        "phpunit/phpunit": "9.5.7"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Jinya\\PDOx\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Imanuel Ulbricht",
+            "email": "me@imanuel.dev"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "laminas/laminas-hydrator": "^4.2.1"
+    }
+}

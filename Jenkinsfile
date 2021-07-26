@@ -30,7 +30,7 @@ spec:
                 sh "mkdir -p /usr/share/man/man1"
                 sh "apt-get update"
                 sh "apt-get install -y apt-utils"
-                sh "apt-get install -y libzip-dev git wget unzip zip"
+                sh "apt-get install -y libzip-dev git wget unzip zip sqlite3"
                 sh "docker-php-ext-install pdo pdo_sqlite zip"
                 sh "php --version"
                 sh '''php -r "copy(\'https://getcomposer.org/installer\', \'composer-setup.php\');"'''

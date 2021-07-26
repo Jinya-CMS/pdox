@@ -30,5 +30,10 @@
         "php": ">=8.0",
         "ext-pdo": "*",
         "laminas/laminas-hydrator": "^4.2.1"
+    },
+    "scripts": {
+        "phpstan": "./vendor/bin/phpstan analyze ./src ./tests",
+        "psalm": "./vendor/bin/psalm --show-info=true",
+        "test": "./vendor/bin/phpunit --log-junit ./report.xml --configuration ./phpunit.xml"
     }
 }

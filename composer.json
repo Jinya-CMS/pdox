@@ -29,7 +29,8 @@
     "require": {
         "php": ">=8.0",
         "ext-pdo": "*",
-        "laminas/laminas-hydrator": "^4.2.1"
+        "laminas/laminas-hydrator": "^4.2.1",
+        "jetbrains/phpstorm-attributes": "^1.0"
     },
     "scripts": {
         "phpstan": "./vendor/bin/phpstan analyze ./src ./tests",

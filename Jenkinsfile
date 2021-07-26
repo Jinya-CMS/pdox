@@ -29,8 +29,9 @@ spec:
             steps {
                 sh "mkdir -p /usr/share/man/man1"
                 sh "apk update"
-                sh "apk add libzip-dev git wget sqlite"
-                sh "docker-php-ext-install pdo pdo_sqlite"
+                sh "apk add git wget"
+                sh "docker-php-ext-install pdo"
+                sh "docker-php-ext-enable pdo pdo_sqlite"
                 sh "php --version"
                 sh '''php -r "copy(\'https://getcomposer.org/installer\', \'composer-setup.php\');"'''
                 sh "php composer-setup.php"

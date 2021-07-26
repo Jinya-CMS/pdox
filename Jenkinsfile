@@ -15,7 +15,7 @@ spec:
         path: /var/run/docker.sock
   containers:
     - name: php
-      image: quay.imanuel.dev/dockerhub/library---php:8-cli-alpine
+      image: quay.imanuel.dev/dockerhub/library---php:8-cli
       command:
         - sleep
       args:
@@ -28,10 +28,8 @@ spec:
         stage('Install dependencies') {
             steps {
                 sh "mkdir -p /usr/share/man/man1"
-                sh "apk update"
-                sh "apk add git wget"
-                sh "docker-php-ext-install pdo"
-                sh "docker-php-ext-enable pdo pdo_sqlite"
+                sh "apt update"
+                sh "apt install -y git wget"
                 sh "php --version"
                 sh '''php -r "copy(\'https://getcomposer.org/installer\', \'composer-setup.php\');"'''
                 sh "php composer-setup.php"

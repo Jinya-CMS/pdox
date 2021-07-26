@@ -29,7 +29,8 @@ spec:
             steps {
                 sh "mkdir -p /usr/share/man/man1"
                 sh "apt update"
-                sh "apt install -y git wget"
+                sh "apt install -y git wget libzip-dev"
+                sh "docker-php-ext-install zip"
                 sh "php --version"
                 sh '''php -r "copy(\'https://getcomposer.org/installer\', \'composer-setup.php\');"'''
                 sh "php composer-setup.php"

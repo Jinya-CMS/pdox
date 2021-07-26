@@ -45,11 +45,6 @@ spec:
                         sh './vendor/bin/phpstan --no-progress analyze ./src ./tests'
                     }
                 }
-                stage('Psalm') {
-                    steps {
-                        sh './vendor/bin/psalm'
-                    }
-                }
                 stage('PHPUnit') {
                     steps {
                         sh './vendor/bin/phpunit --log-junit ./report.xml --configuration ./phpunit.xml'

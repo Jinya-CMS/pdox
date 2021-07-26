@@ -299,8 +299,8 @@ class PDOxTest extends TestCase
         $data = $pdo->fetchIterator('SELECT * FROM test', new TestClassForTestFetchIteratorWithoutHydratorWithInvalidPrototype());
         $this->assertNotNull($data);
         foreach ($data as $item) {
-            /** @phpstan-ignore-next-line */
             /** @noinspection PhpUnusedLocalVariableInspection */
+            /** @phpstan-ignore-next-line */
             $field = $item->test;
         }
     }
@@ -372,8 +372,8 @@ class PDOxTest extends TestCase
         $data = $pdo->fetchIterator('SELECT * FROM test', new TestClassForTestFetchIteratorWithHydratorWithInvalidPrototype());
         $this->assertNotNull($data);
         foreach ($data as $item) {
-            /** @phpstan-ignore-next-line */
             /** @noinspection PhpUnusedLocalVariableInspection */
+            /** @phpstan-ignore-next-line */
             $field = $item->testField;
         }
     }

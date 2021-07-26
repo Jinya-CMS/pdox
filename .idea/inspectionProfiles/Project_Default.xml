@@ -77,7 +77,7 @@
       <option name="autoload" value="$PROJECT_DIR$/vendor/autoload.php" />
     </inspection_tool>
     <inspection_tool class="PsalmAdvanceCallableParamsInspection" enabled="false" level="ERROR" enabled_by_default="false" />
-    <inspection_tool class="PsalmGlobal" enabled="true" level="ERROR" enabled_by_default="true">
+    <inspection_tool class="PsalmGlobal" enabled="false" level="ERROR" enabled_by_default="false">
       <option name="config" value="$PROJECT_DIR$/psalm.xml" />
       <option name="findUnusedCode" value="true" />
       <option name="findUnusedSuppress" value="true" />

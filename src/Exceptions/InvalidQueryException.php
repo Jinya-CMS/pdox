@@ -8,7 +8,14 @@ use Throwable;
 
 class InvalidQueryException extends Exception
 {
-    #[Pure] public function __construct($message = "", $code = 0, Throwable $previous = null, public array $errorInfo = [])
+    /**
+     * InvalidQueryException constructor.
+     * @param string $message
+     * @param int $code
+     * @param Throwable|null $previous
+     * @param array<string, mixed> $errorInfo
+     */
+    #[Pure] public function __construct(string $message = "", int $code = 0, Throwable $previous = null, public array $errorInfo = [])
     {
         parent::__construct($message, $code, $previous);
     }

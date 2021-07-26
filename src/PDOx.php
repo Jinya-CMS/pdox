@@ -2,10 +2,12 @@
 
 namespace Jinya\PDOx;
 
+use Iterator;
 use Jinya\PDOx\Exceptions\InvalidQueryException;
 use Jinya\PDOx\Exceptions\NoResultException;
 use Laminas\Hydrator\NamingStrategy\UnderscoreNamingStrategy;
 use Laminas\Hydrator\ReflectionHydrator;
+use Laminas\Hydrator\Strategy\StrategyInterface;
 use PDO;
 use function array_key_exists;
 use function count;
@@ -21,7 +23,14 @@ class PDOx extends PDO
     public const PDOX_NO_RESULT_BEHAVIOR_NULL = 'PDOX_NO_RESULT_BEHAVIOR_NULL';
     public const PDOX_NO_RESULT_BEHAVIOR_EXCEPTION = 'PDOX_NO_RESULT_BEHAVIOR_EXCEPTION';
 
-    public function __construct($dsn, $username = null, $password = null, $options = null)
+    /**
+     * PDOx constructor.
+     * @param string $dsn
+     * @param string|null $username
+     * @param string|null $password
+     * @param array<string, mixed>|null $options
+     */
+    public function __construct(string $dsn, string $username = null, string $password = null, array $options = null)
     {
         parent::__construct($dsn, $username, $password, $options);
         $this->hydrator = new ReflectionHydrator();
@@ -39,6 +48,32 @@ class PDOx extends PDO
     }
 
     /**
+     * @param object[] $data
+     * @return bool
+     * @throws InvalidQueryException
+     * @throws NoResultException
+     */
+    private function checkFetchObjectForCount(array $data): bool
+    {
+        if (count($data) > 1) {
+            throw new InvalidQueryException('Query returned more than one result');
+        } elseif (count($data) === 0) {
+            if ($this->noResultBehavior === self::PDOX_NO_RESULT_BEHAVIOR_EXCEPTION) {
+                throw new NoResultException('Query returned no result');
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param string $query
+     * @param object $prototype
+     * @param array<int, mixed>|null $parameters
+     * @param StrategyInterface[] $strategies
+     * @return mixed
      * @throws InvalidQueryException
      * @throws NoResultException
      */
@@ -49,13 +84,7 @@ class PDOx extends PDO
         if ($result) {
             if ($this->useReflectionHydrator) {
                 $data = $stmt->fetchAll(self::FETCH_ASSOC);
-                if (count($data) > 1) {
-                    throw new InvalidQueryException('Query returned more than one result');
-                } elseif (count($data) === 0) {
-                    if ($this->noResultBehavior === self::PDOX_NO_RESULT_BEHAVIOR_EXCEPTION) {
-                        throw new NoResultException('Query returned no result');
-                    }
-
+                if ($data === false || !$this->checkFetchObjectForCount($data)) {
                     return null;
                 }
 
@@ -71,15 +100,10 @@ class PDOx extends PDO
                 return $item;
             }
 
+            /** @phpstan-ignore-next-line */
             $stmt->setFetchMode(self::FETCH_CLASS, get_class($prototype));
             $data = $stmt->fetchAll(self::FETCH_CLASS);
-            if (count($data) > 1) {
-                throw new InvalidQueryException('Query returned more than one result');
-            } elseif (count($data) === 0) {
-                if ($this->noResultBehavior === self::PDOX_NO_RESULT_BEHAVIOR_EXCEPTION) {
-                    throw new NoResultException('Query returned no result');
-                }
-
+            if ($data === false || !$this->checkFetchObjectForCount($data)) {
                 return null;
             }
 
@@ -87,5 +111,49 @@ class PDOx extends PDO
         }
 
         throw new InvalidQueryException('Failed to execute query', errorInfo: $stmt->errorInfo());
+    }
+
+    /**
+     * @param string $query
+     * @param object $prototype
+     * @param array<int, mixed>|null $parameters
+     * @param StrategyInterface[] $strategies
+     * @return Iterator<object>
+     * @throws InvalidQueryException
+     */
+    public function fetchIterator(string $query, object $prototype, array $parameters = null, array $strategies = []): Iterator
+    {
+        $stmt = $this->prepare($query);
+        $result = $stmt->execute($parameters);
+        if ($result) {
+            if ($this->useReflectionHydrator) {
+                $data = $stmt->fetchAll(self::FETCH_ASSOC);
+                if ($data !== false) {
+                    foreach ($strategies as $key => $strategy) {
+                        $this->hydrator->addStrategy($key, $strategy);
+                    }
+
+                    foreach ($data as $item) {
+                        yield $this->hydrator->hydrate($item, $prototype);
+                    }
+
+                    foreach ($strategies as $key => $strategy) {
+                        $this->hydrator->removeStrategy($key);
+                    }
+                }
+            } else {
+                /** @phpstan-ignore-next-line */
+                $stmt->setFetchMode(self::FETCH_CLASS, get_class($prototype));
+                $data = $stmt->fetchAll();
+
+                if ($data !== false) {
+                    foreach ($data as $item) {
+                        yield $item;
+                    }
+                }
+            }
+        } else {
+            throw new InvalidQueryException('Failed to execute query', errorInfo: $stmt->errorInfo());
+        }
     }
 }

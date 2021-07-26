@@ -5,12 +5,19 @@
     "require-dev": {
         "phpstan/phpstan": "0.12.93",
         "vimeo/psalm": "4.8.1",
-        "phpunit/phpunit": "9.5.7"
+        "phpunit/phpunit": "9.5.7",
+        "ext-sqlite3": "*",
+        "ext-pdo_sqlite": "*"
     },
     "license": "MIT",
     "autoload": {
         "psr-4": {
             "Jinya\\PDOx\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Jinya\\Tests\\": "tests/"
         }
     },
     "authors": [
@@ -20,7 +27,8 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": ">=8.0",
+        "ext-pdo": "*",
         "laminas/laminas-hydrator": "^4.2.1"
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f6773fcf1e5ee7f6747aa4b4b6489bf3",
+    "content-hash": "7782c34d6b7e7997afe7a40bbf6e67d0",
     "packages": [
         {
             "name": "laminas/laminas-hydrator",
@@ -3982,8 +3982,12 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.0"
+        "php": ">=8.0",
+        "ext-pdo": "*"
     },
-    "platform-dev": [],
+    "platform-dev": {
+        "ext-sqlite3": "*",
+        "ext-pdo_sqlite": "*"
+    },
     "plugin-api-version": "2.1.0"
 }

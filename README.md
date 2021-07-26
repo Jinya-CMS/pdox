@@ -60,12 +60,15 @@ PDOx introduces two new fields for the PDO options. These are passed in the cons
 control whether PDOx should transform the field names and how it should handle empty results by returning `null` or
 throwing an exception.
 
-The following table gives you an overview:
+### `PDOx::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE`
+Possible Value: `true` or `false`
 
-| Field                                 | Function                                                                                                    | Possible values                                                       |
-|---------------------------------------|-------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------|
-| `PDOx::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE` | Controls whether the casing should be converted between underscore case in the database to CamelCase in PHP | `true` or `false`                                                     |
-| `PDOx::PDOX_NO_RESULT_BEHAVIOR`             | Controls how PDOx should handle no result in `fetchObject`                                                  | `PDOx::PDOX_NO_RESULT_BEHAVIOR_NULL` or `PDOx::PDOX_NO_RESULT_BEHAVIOR_EXCEPTION` |
+Purpose: Controls whether the casing should be converted between underscore case in the database to CamelCase in PHP
+
+### `PDOx::PDOX_NO_RESULT_BEHAVIOR`
+Possible value: `PDOx::PDOX_NO_RESULT_BEHAVIOR_NULL` or `PDOx::PDOX_NO_RESULT_BEHAVIOR_EXCEPTION`
+
+Purpose: Controls how PDOx should handle no result in `fetchObject`
 
 ## Found a bug?
 If you found a bug feel free to create an issue on Github or on our Taiga instance: https://taiga.imanuel.dev/project/pdox/

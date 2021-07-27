@@ -71,7 +71,7 @@ Possible value: `PDOx::PDOX_NO_RESULT_BEHAVIOR_NULL` or `PDOx::PDOX_NO_RESULT_BE
 Purpose: Controls how PDOx should handle no result in `fetchObject`
 
 ## Found a bug?
-If you found a bug feel free to create an issue on Github or on our Taiga instance: https://taiga.imanuel.dev/project/pdox/
+If you found a bug feel free to create an issue on Github or on our Taiga instance: [https://taiga.imanuel.dev/project/pdox/](https://taiga.imanuel.dev/project/pdox/)
 
 ## License
 Like all other Jinya projects, PDOx is distributed under the MIT License.

@@ -4,7 +4,7 @@
     "type": "library",
     "require-dev": {
         "phpstan/phpstan": "0.12.98",
-        "phpunit/phpunit": "9.5.8",
+        "phpunit/phpunit": "9.5.9",
         "ext-sqlite3": "*",
         "ext-pdo_sqlite": "*"
     },

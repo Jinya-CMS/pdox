@@ -93,16 +93,13 @@ class PDOx extends PDO
                 }
 
                 $item = $this->hydrator->hydrate($data[0], $prototype);
-                foreach ($strategies as $key => $strategy) {
-                    $this->hydrator->removeStrategy($key);
-                }
 
                 return $item;
             }
 
             /** @phpstan-ignore-next-line */
             $stmt->setFetchMode(self::FETCH_CLASS, get_class($prototype));
-            $data = $stmt->fetchAll(self::FETCH_CLASS);
+            $data = $stmt->fetchAll();
             if ($data === false || !$this->checkFetchObjectForCount($data)) {
                 return null;
             }
@@ -135,10 +132,6 @@ class PDOx extends PDO
 
                     foreach ($data as $item) {
                         yield $this->hydrator->hydrate($item, $prototype);
-                    }
-
-                    foreach ($strategies as $key => $strategy) {
-                        $this->hydrator->removeStrategy($key);
                     }
                 }
             } else {

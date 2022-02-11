@@ -57,7 +57,9 @@ class PDOx extends PDO
     {
         if (count($data) > 1) {
             throw new InvalidQueryException('Query returned more than one result');
-        } elseif (count($data) === 0) {
+        }
+
+        if (count($data) === 0) {
             if ($this->noResultBehavior === self::PDOX_NO_RESULT_BEHAVIOR_EXCEPTION) {
                 throw new NoResultException('Query returned no result');
             }
@@ -92,12 +94,7 @@ class PDOx extends PDO
                     $this->hydrator->addStrategy($key, $strategy);
                 }
 
-                $item = $this->hydrator->hydrate($data[0], $prototype);
-                foreach ($strategies as $key => $strategy) {
-                    $this->hydrator->removeStrategy($key);
-                }
-
-                return $item;
+                return $this->hydrator->hydrate($data[0], $prototype);
             }
 
             /** @phpstan-ignore-next-line */
@@ -135,10 +132,6 @@ class PDOx extends PDO
 
                     foreach ($data as $item) {
                         yield $this->hydrator->hydrate($item, $prototype);
-                    }
-
-                    foreach ($strategies as $key => $strategy) {
-                        $this->hydrator->removeStrategy($key);
                     }
                 }
             } else {
@@ -180,10 +173,6 @@ class PDOx extends PDO
 
                     foreach ($data as $item) {
                         $items[] = $this->hydrator->hydrate($item, $prototype);
-                    }
-
-                    foreach ($strategies as $key => $strategy) {
-                        $this->hydrator->removeStrategy($key);
                     }
 
                     return $items;

@@ -3,8 +3,8 @@
     "description": "Jinya PDOx is a simple object mapper built around PHPs standard PDO",
     "type": "library",
     "require-dev": {
-        "phpstan/phpstan": "0.12.98",
-        "phpunit/phpunit": "9.5.9",
+        "phpstan/phpstan": "1.4.5",
+        "phpunit/phpunit": "9.5.13",
         "ext-sqlite3": "*",
         "ext-pdo_sqlite": "*"
     },

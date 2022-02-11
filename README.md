@@ -4,11 +4,12 @@ PDOx is a small PDO extension that enables developers to simple run a single que
 For this purpose it utilizes either native PDO or laminas-hydrator.
 
 ## Installation
+
 Simply run `composer require jinya/pdox` in your project.
 
 ## Usage
 
-PDOx contains two methods apart from the default PDO methods.
+PDOx contains three methods apart from the default PDO methods.
 
 ### `$pdo->fetchObject($query, $prototype, $parameters, $strategies)`
 
@@ -51,8 +52,29 @@ $result = $pdox->fetchIterator('SELECT * FROM table_test WHERE id = ?', new MyOb
 var_dump($result);
 ```
 
-The code for `fetchIterator` and `fetchObject` is basically the same. You only need to replace the method name and PDOx
-does the rest for you.
+The method call for `fetchIterator` and `fetchObject` is basically the same. You only need to replace the method name
+and PDOx does the rest for you.
+
+### `$pdo->fetchArray($query, $prototype, $parameters, $strategies)`
+
+This method allows you to fetch an iterator of objects from the query and hydrate the results into a class of the type
+of `$prototype`. An example call can look like this:
+
+```php
+<?php
+use Laminas\Hydrator\Strategy\BooleanStrategy;
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+$pdox = new Jinya\PDOx\PDOx('sqlite::memory:');
+$result = $pdox->fetchArray('SELECT * FROM table_test WHERE id = ?', new MyObject(), [1], [
+    'active' => new BooleanStrategy('1','0'),
+]);
+var_dump($result);
+```
+
+The method call for `fetchArray` and `fetchIterator` is basically the same. You only need to replace the method name and
+PDOx does the rest for you.
 
 ## Configuration
 
@@ -61,17 +83,22 @@ control whether PDOx should transform the field names and how it should handle e
 throwing an exception.
 
 ### `PDOx::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE`
+
 Possible Value: `true` or `false`
 
 Purpose: Controls whether the casing should be converted between underscore case in the database to CamelCase in PHP
 
 ### `PDOx::PDOX_NO_RESULT_BEHAVIOR`
+
 Possible value: `PDOx::PDOX_NO_RESULT_BEHAVIOR_NULL` or `PDOx::PDOX_NO_RESULT_BEHAVIOR_EXCEPTION`
 
 Purpose: Controls how PDOx should handle no result in `fetchObject`
 
 ## Found a bug?
-If you found a bug feel free to create an issue on Github or on our Taiga instance: [https://taiga.imanuel.dev/project/pdox/](https://taiga.imanuel.dev/project/pdox/)
+
+If you found a bug feel free to create an issue on Github or on our Taiga
+instance: [https://taiga.imanuel.dev/project/pdox/](https://taiga.imanuel.dev/project/pdox/)
 
 ## License
+
 Like all other Jinya projects, PDOx is distributed under the MIT License.

@@ -156,4 +156,51 @@ class PDOx extends PDO
             throw new InvalidQueryException('Failed to execute query', errorInfo: $stmt->errorInfo());
         }
     }
+
+    /**
+     * @param string $query
+     * @param object $prototype
+     * @param array<int, mixed>|null $parameters
+     * @param StrategyInterface[] $strategies
+     * @return array<object>
+     * @throws InvalidQueryException
+     */
+    public function fetchArray(string $query, object $prototype, array $parameters = null, array $strategies = []): array
+    {
+        $stmt = $this->prepare($query);
+        $result = $stmt->execute($parameters);
+        $items = [];
+        if ($result) {
+            if ($this->useReflectionHydrator) {
+                $data = $stmt->fetchAll(self::FETCH_ASSOC);
+                if ($data !== false) {
+                    foreach ($strategies as $key => $strategy) {
+                        $this->hydrator->addStrategy($key, $strategy);
+                    }
+
+                    foreach ($data as $item) {
+                        $items[] = $this->hydrator->hydrate($item, $prototype);
+                    }
+
+                    foreach ($strategies as $key => $strategy) {
+                        $this->hydrator->removeStrategy($key);
+                    }
+
+                    return $items;
+                }
+            } else {
+                /** @phpstan-ignore-next-line */
+                $stmt->setFetchMode(self::FETCH_CLASS, get_class($prototype));
+
+                $data = $stmt->fetchAll();
+                if ($data) {
+                    return $data;
+                }
+
+                return [];
+            }
+        }
+
+        throw new InvalidQueryException('Failed to execute query', errorInfo: $stmt->errorInfo());
+    }
 }

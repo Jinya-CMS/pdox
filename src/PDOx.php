@@ -94,7 +94,9 @@ class PDOx extends PDO
                     $this->hydrator->addStrategy($key, $strategy);
                 }
 
-                return $this->hydrator->hydrate($data[0], $prototype);
+                $prototypeClass = get_class($prototype);
+
+                return $this->hydrator->hydrate($data[0], new $prototypeClass);
             }
 
             /** @phpstan-ignore-next-line */
@@ -129,9 +131,10 @@ class PDOx extends PDO
                     foreach ($strategies as $key => $strategy) {
                         $this->hydrator->addStrategy($key, $strategy);
                     }
+                    $prototypeClass = get_class($prototype);
 
                     foreach ($data as $item) {
-                        yield $this->hydrator->hydrate($item, $prototype);
+                        yield $this->hydrator->hydrate($item, new $prototypeClass);
                     }
                 }
             } else {
@@ -170,9 +173,10 @@ class PDOx extends PDO
                     foreach ($strategies as $key => $strategy) {
                         $this->hydrator->addStrategy($key, $strategy);
                     }
+                    $prototypeClass = get_class($prototype);
 
                     foreach ($data as $item) {
-                        $items[] = $this->hydrator->hydrate($item, $prototype);
+                        $items[] = $this->hydrator->hydrate($item, new $prototypeClass);
                     }
 
                     return $items;

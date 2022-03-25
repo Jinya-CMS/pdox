@@ -86,7 +86,7 @@ class PDOx extends PDO
         if ($result) {
             if ($this->useReflectionHydrator) {
                 $data = $stmt->fetchAll(self::FETCH_ASSOC);
-                if ($data === false || !$this->checkFetchObjectForCount($data)) {
+                if (!is_array($data) || !$this->checkFetchObjectForCount($data)) {
                     return null;
                 }
 
@@ -99,10 +99,9 @@ class PDOx extends PDO
                 return $this->hydrator->hydrate($data[0], new $prototypeClass);
             }
 
-            /** @phpstan-ignore-next-line */
             $stmt->setFetchMode(self::FETCH_CLASS, get_class($prototype));
             $data = $stmt->fetchAll(self::FETCH_CLASS);
-            if ($data === false || !$this->checkFetchObjectForCount($data)) {
+            if (!is_array($data) || !$this->checkFetchObjectForCount($data)) {
                 return null;
             }
 
@@ -138,7 +137,6 @@ class PDOx extends PDO
                     }
                 }
             } else {
-                /** @phpstan-ignore-next-line */
                 $stmt->setFetchMode(self::FETCH_CLASS, get_class($prototype));
                 $data = $stmt->fetchAll();
 
@@ -182,7 +180,6 @@ class PDOx extends PDO
                     return $items;
                 }
             } else {
-                /** @phpstan-ignore-next-line */
                 $stmt->setFetchMode(self::FETCH_CLASS, get_class($prototype));
 
                 $data = $stmt->fetchAll();

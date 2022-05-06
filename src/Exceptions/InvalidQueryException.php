@@ -13,7 +13,7 @@ class InvalidQueryException extends Exception
      * @param string $message
      * @param int $code
      * @param Throwable|null $previous
-     * @param array<string, mixed> $errorInfo
+     * @param array<int, mixed> $errorInfo
      */
     #[Pure] public function __construct(string $message = "", int $code = 0, Throwable $previous = null, public array $errorInfo = [])
     {

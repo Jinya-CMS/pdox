@@ -116,7 +116,7 @@ class PDOx extends PDO
      * @param object $prototype
      * @param array<int|string, mixed>|null $parameters
      * @param StrategyInterface[] $strategies
-     * @return Iterator<object>
+     * @return Iterator<mixed>
      * @throws InvalidQueryException
      */
     public function fetchIterator(string $query, object $prototype, array $parameters = null, array $strategies = []): Iterator

@@ -73,7 +73,7 @@ class PDOx extends PDO
     /**
      * @param string $query
      * @param object $prototype
-     * @param array<int, mixed>|null $parameters
+     * @param array<int|string, mixed>|null $parameters
      * @param StrategyInterface[] $strategies
      * @return mixed
      * @throws InvalidQueryException
@@ -114,7 +114,7 @@ class PDOx extends PDO
     /**
      * @param string $query
      * @param object $prototype
-     * @param array<int, mixed>|null $parameters
+     * @param array<int|string, mixed>|null $parameters
      * @param StrategyInterface[] $strategies
      * @return Iterator<object>
      * @throws InvalidQueryException
@@ -154,7 +154,7 @@ class PDOx extends PDO
     /**
      * @param string $query
      * @param object $prototype
-     * @param array<int, mixed>|null $parameters
+     * @param array<int|string, mixed>|null $parameters
      * @param StrategyInterface[] $strategies
      * @return array<object>
      * @throws InvalidQueryException

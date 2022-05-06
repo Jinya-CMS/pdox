@@ -28,7 +28,7 @@ class PDOx extends PDO
      * @param string $dsn
      * @param string|null $username
      * @param string|null $password
-     * @param array<string, mixed>|null $options
+     * @param array<string|int, string|int|bool>|null $options
      */
     public function __construct(string $dsn, string $username = null, string $password = null, array $options = null)
     {

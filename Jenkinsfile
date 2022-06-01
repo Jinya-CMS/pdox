@@ -9,13 +9,9 @@ pipeline {
 apiVersion: v1
 kind: Pod
 spec:
-  volumes:
-    - name: docker-sock
-      hostPath:
-        path: /var/run/docker.sock
   containers:
     - name: php
-      image: quay.imanuel.dev/dockerhub/library---php:8-cli
+      image: quay.imanuel.dev/dockerhub/library---php:8.1-cli
       command:
         - sleep
       args:
@@ -29,8 +25,11 @@ spec:
             steps {
                 sh "mkdir -p /usr/share/man/man1"
                 sh "apt update"
-                sh "apt install -y git wget libzip-dev"
+                sh "apt install -y git wget libzip-dev sqlite3 libsqlite3-dev"
                 sh "docker-php-ext-install zip"
+                sh 'docker-php-ext-install pdo pdo_sqlite'
+                sh 'pecl install pcov'
+                sh 'docker-php-ext-enable pcov'
                 sh "php --version"
                 sh '''php -r "copy(\'https://getcomposer.org/installer\', \'composer-setup.php\');"'''
                 sh "php composer-setup.php"

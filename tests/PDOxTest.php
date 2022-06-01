@@ -300,7 +300,6 @@ class PDOxTest extends TestCase
         $this->assertNotNull($data);
         foreach ($data as $item) {
             /** @noinspection PhpUnusedLocalVariableInspection */
-            /** @phpstan-ignore-next-line */
             $field = $item->test;
         }
     }
@@ -345,7 +344,6 @@ class PDOxTest extends TestCase
 
         $this->assertNotNull($data);
         foreach ($data as $item) {
-            /** @phpstan-ignore-next-line */
             $this->assertTrue($item->active);
         }
     }
@@ -373,7 +371,6 @@ class PDOxTest extends TestCase
         $this->assertNotNull($data);
         foreach ($data as $item) {
             /** @noinspection PhpUnusedLocalVariableInspection */
-            /** @phpstan-ignore-next-line */
             $field = $item->testField;
         }
     }

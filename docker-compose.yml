@@ -1,0 +1,11 @@
+version: '3.9'
+
+volumes:
+  logs:
+    driver: local
+
+services:
+  pdox-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev

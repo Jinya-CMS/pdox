@@ -14,7 +14,6 @@ use function count;
 
 class PDOx extends PDO
 {
-    private ReflectionHydrator $hydrator;
     private bool $useReflectionHydrator;
     private string $noResultBehavior = self::PDOX_NO_RESULT_BEHAVIOR_NULL;
 
@@ -22,6 +21,19 @@ class PDOx extends PDO
     public const PDOX_NO_RESULT_BEHAVIOR = 'PDOX_NO_RESULT_BEHAVIOR';
     public const PDOX_NO_RESULT_BEHAVIOR_NULL = 'PDOX_NO_RESULT_BEHAVIOR_NULL';
     public const PDOX_NO_RESULT_BEHAVIOR_EXCEPTION = 'PDOX_NO_RESULT_BEHAVIOR_EXCEPTION';
+
+    /**
+     * Generates a new ReflectionHydrator
+     *
+     * @return ReflectionHydrator
+     */
+    private function getHydrator(): ReflectionHydrator
+    {
+        $hydrator = new ReflectionHydrator();
+        $hydrator->setNamingStrategy(new UnderscoreNamingStrategy());
+
+        return $hydrator;
+    }
 
     /**
      * PDOx constructor.
@@ -33,13 +45,10 @@ class PDOx extends PDO
     public function __construct(string $dsn, string $username = null, string $password = null, array $options = null)
     {
         parent::__construct($dsn, $username, $password, $options);
-        $this->hydrator = new ReflectionHydrator();
         if ($options && array_key_exists(self::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE, $options) && $options[self::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE] === false) {
             $this->useReflectionHydrator = false;
-            $this->hydrator->removeNamingStrategy();
         } else {
             $this->useReflectionHydrator = true;
-            $this->hydrator->setNamingStrategy(new UnderscoreNamingStrategy());
         }
 
         if ($options && array_key_exists(self::PDOX_NO_RESULT_BEHAVIOR, $options) && $options[self::PDOX_NO_RESULT_BEHAVIOR] === self::PDOX_NO_RESULT_BEHAVIOR_EXCEPTION) {
@@ -90,13 +99,14 @@ class PDOx extends PDO
                     return null;
                 }
 
+                $hydrator = $this->getHydrator();
                 foreach ($strategies as $key => $strategy) {
-                    $this->hydrator->addStrategy($key, $strategy);
+                    $hydrator->addStrategy($key, $strategy);
                 }
 
                 $prototypeClass = get_class($prototype);
 
-                return $this->hydrator->hydrate($data[0], new $prototypeClass);
+                return $hydrator->hydrate($data[0], new $prototypeClass);
             }
 
             $stmt->setFetchMode(self::FETCH_CLASS, get_class($prototype));
@@ -125,15 +135,16 @@ class PDOx extends PDO
         $result = $stmt->execute($parameters);
         if ($result) {
             if ($this->useReflectionHydrator) {
+                $hydrator = $this->getHydrator();
                 $data = $stmt->fetchAll(self::FETCH_ASSOC);
                 if ($data !== false) {
                     foreach ($strategies as $key => $strategy) {
-                        $this->hydrator->addStrategy($key, $strategy);
+                        $hydrator->addStrategy($key, $strategy);
                     }
                     $prototypeClass = get_class($prototype);
 
                     foreach ($data as $item) {
-                        yield $this->hydrator->hydrate($item, new $prototypeClass);
+                        yield $hydrator->hydrate($item, new $prototypeClass);
                     }
                 }
             } else {
@@ -167,14 +178,15 @@ class PDOx extends PDO
         if ($result) {
             if ($this->useReflectionHydrator) {
                 $data = $stmt->fetchAll(self::FETCH_ASSOC);
+                $hydrator = $this->getHydrator();
                 if ($data !== false) {
                     foreach ($strategies as $key => $strategy) {
-                        $this->hydrator->addStrategy($key, $strategy);
+                        $hydrator->addStrategy($key, $strategy);
                     }
                     $prototypeClass = get_class($prototype);
 
                     foreach ($data as $item) {
-                        $items[] = $this->hydrator->hydrate($item, new $prototypeClass);
+                        $items[] = $hydrator->hydrate($item, new $prototypeClass);
                     }
 
                     return $items;

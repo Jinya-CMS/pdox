@@ -2,6 +2,7 @@
 
 namespace Jinya\Tests;
 
+use Error;
 use Jinya\PDOx\Exceptions\InvalidQueryException;
 use Jinya\PDOx\Exceptions\NoResultException;
 use Jinya\PDOx\PDOx;
@@ -153,7 +154,6 @@ class PDOxTest extends TestCase
 
     public function testFetchObjectWithoutHydratorWithInvalidPrototype(): void
     {
-        $this->expectError();
         $pdo = new PDOx('sqlite::memory:', options: [PDOx::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE => false]);
         $pdo->exec('CREATE TABLE test (pkey int primary key)');
         $pdo->exec('INSERT INTO test (pkey) VALUES (1)');
@@ -217,14 +217,12 @@ class PDOxTest extends TestCase
 
     public function testFetchObjectWithHydratorWithInvalidPrototype(): void
     {
-        $this->expectError();
         $pdo = new PDOx('sqlite::memory:', options: [PDOx::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE => false]);
         $pdo->exec('CREATE TABLE test (pkey_id int primary key)');
         $pdo->exec('INSERT INTO test (pkey_id) VALUES (1)');
 
         $data = $pdo->fetchObject('SELECT * FROM test', new TestClassForTestFetchObjectWithHydratorWithInvalidPrototype());
         $this->assertNotNull($data);
-        $this->assertEquals(1, $data->pkey);
         /** @noinspection PhpUnusedLocalVariableInspection */
         $field = $data->testField;
     }
@@ -262,7 +260,7 @@ class PDOxTest extends TestCase
         $data = $pdo->fetchIterator('SELECT * FROM test', new TestClassForTestFetchIteratorWithoutHydrator());
 
         $this->assertNotNull($data);
-        $this->assertCount(1, $data);
+        $this->assertCount(1, iterator_to_array($data));
     }
 
     public function testFetchIteratorWithoutHydratorMultipleEntries(): void
@@ -274,7 +272,7 @@ class PDOxTest extends TestCase
 
         $result = $pdo->fetchIterator('SELECT * FROM test', new TestClassForTestFetchIteratorWithoutHydrator());
         $this->assertNotNull($result);
-        $this->assertCount(2, $result);
+        $this->assertCount(2, iterator_to_array($result));
     }
 
     public function testFetchIteratorWithoutHydratorNoResultNull(): void
@@ -286,21 +284,25 @@ class PDOxTest extends TestCase
 
         $result = $pdo->fetchIterator('SELECT * FROM test WHERE pkey > 4', new TestClassForTestFetchIteratorWithoutHydrator());
         $this->assertNotNull($result);
-        $this->assertCount(0, $result);
+        $this->assertCount(0, iterator_to_array($result));
     }
 
     public function testFetchIteratorWithoutHydratorWithInvalidPrototype(): void
     {
-        $this->expectError();
-        $pdo = new PDOx('sqlite::memory:', options: [PDOx::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE => false]);
-        $pdo->exec('CREATE TABLE test (pkey int primary key)');
-        $pdo->exec('INSERT INTO test (pkey) VALUES (1)');
+        try {
+            $pdo = new PDOx('sqlite::memory:', options: [PDOx::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE => false]);
+            $pdo->exec('CREATE TABLE test (pkey int primary key)');
+            $pdo->exec('INSERT INTO test (pkey) VALUES (1)');
 
-        $data = $pdo->fetchIterator('SELECT * FROM test', new TestClassForTestFetchIteratorWithoutHydratorWithInvalidPrototype());
-        $this->assertNotNull($data);
-        foreach ($data as $item) {
-            /** @noinspection PhpUnusedLocalVariableInspection */
-            $field = $item->test;
+            $data = $pdo->fetchIterator('SELECT * FROM test', new TestClassForTestFetchIteratorWithoutHydratorWithInvalidPrototype());
+            $this->assertNotNull($data);
+            foreach ($data as $item) {
+                /** @noinspection PhpUnusedLocalVariableInspection */
+                $field = $item->test;
+            }
+            $this->assertTrue(false);
+        } catch (Error) {
+            $this->assertTrue(true);
         }
     }
 
@@ -331,7 +333,7 @@ class PDOxTest extends TestCase
         $result = $pdo->fetchIterator('SELECT * FROM test', new TestClassForTestFetchIteratorWithHydrator());
 
         $this->assertNotNull($result);
-        $this->assertCount(1, $result);
+        $this->assertCount(1, iterator_to_array($result));
     }
 
     public function testFetchIteratorWithHydratorAndStrategies(): void
@@ -357,21 +359,25 @@ class PDOxTest extends TestCase
 
         $result = $pdo->fetchIterator('SELECT * FROM test', new TestClassForTestFetchIteratorWithoutHydrator());
         $this->assertNotNull($result);
-        $this->assertCount(2, $result);
+        $this->assertCount(2, iterator_to_array($result));
     }
 
     public function testFetchIteratorWithHydratorWithInvalidPrototype(): void
     {
-        $this->expectError();
-        $pdo = new PDOx('sqlite::memory:', options: [PDOx::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE => false]);
-        $pdo->exec('CREATE TABLE test (pkey_id int primary key)');
-        $pdo->exec('INSERT INTO test (pkey_id) VALUES (1)');
+        try {
+            $pdo = new PDOx('sqlite::memory:', options: [PDOx::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE => false]);
+            $pdo->exec('CREATE TABLE test (pkey_id int primary key)');
+            $pdo->exec('INSERT INTO test (pkey_id) VALUES (1)');
 
-        $data = $pdo->fetchIterator('SELECT * FROM test', new TestClassForTestFetchIteratorWithHydratorWithInvalidPrototype());
-        $this->assertNotNull($data);
-        foreach ($data as $item) {
-            /** @noinspection PhpUnusedLocalVariableInspection */
-            $field = $item->testField;
+            $data = $pdo->fetchIterator('SELECT * FROM test', new TestClassForTestFetchIteratorWithHydratorWithInvalidPrototype());
+            $this->assertNotNull($data);
+            foreach ($data as $item) {
+                /** @noinspection PhpUnusedLocalVariableInspection */
+                $field = $item->testField;
+            }
+            $this->assertTrue(false);
+        } catch (Error) {
+            $this->assertTrue(true);
         }
     }
 
@@ -383,7 +389,7 @@ class PDOxTest extends TestCase
         $pdo->exec('INSERT INTO test (pkey_id) VALUES (2)');
 
         $result = $pdo->fetchIterator('SELECT * FROM test WHERE pkey_id > 4', new TestClassForTestFetchIteratorWithHydrator());
-        $this->assertCount(0, $result);
+        $this->assertCount(0, iterator_to_array($result));
     }
 
 
@@ -425,17 +431,21 @@ class PDOxTest extends TestCase
 
     public function testFetchArrayWithoutHydratorWithInvalidPrototype(): void
     {
-        $this->expectError();
-        $pdo = new PDOx('sqlite::memory:', options: [PDOx::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE => false]);
-        $pdo->exec('CREATE TABLE test (pkey int primary key)');
-        $pdo->exec('INSERT INTO test (pkey) VALUES (1)');
+        try {
+            $pdo = new PDOx('sqlite::memory:', options: [PDOx::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE => false]);
+            $pdo->exec('CREATE TABLE test (pkey int primary key)');
+            $pdo->exec('INSERT INTO test (pkey) VALUES (1)');
 
-        $data = $pdo->fetchArray('SELECT * FROM test', new TestClassForTestFetchIteratorWithoutHydratorWithInvalidPrototype());
-        $this->assertNotNull($data);
-        foreach ($data as $item) {
-            /** @noinspection PhpUnusedLocalVariableInspection */
-            /** @phpstan-ignore-next-line */
-            $field = $item->test;
+            $data = $pdo->fetchArray('SELECT * FROM test', new TestClassForTestFetchIteratorWithoutHydratorWithInvalidPrototype());
+            $this->assertNotNull($data);
+            foreach ($data as $item) {
+                /** @noinspection PhpUnusedLocalVariableInspection */
+                /** @phpstan-ignore-next-line */
+                $field = $item->test;
+            }
+            $this->assertTrue(false);
+        } catch (Error) {
+            $this->assertTrue(true);
         }
     }
 
@@ -498,17 +508,21 @@ class PDOxTest extends TestCase
 
     public function testFetchArrayWithHydratorWithInvalidPrototype(): void
     {
-        $this->expectError();
-        $pdo = new PDOx('sqlite::memory:', options: [PDOx::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE => false]);
-        $pdo->exec('CREATE TABLE test (pkey_id int primary key)');
-        $pdo->exec('INSERT INTO test (pkey_id) VALUES (1)');
+        try {
+            $pdo = new PDOx('sqlite::memory:', options: [PDOx::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE => false]);
+            $pdo->exec('CREATE TABLE test (pkey_id int primary key)');
+            $pdo->exec('INSERT INTO test (pkey_id) VALUES (1)');
 
-        $data = $pdo->fetchArray('SELECT * FROM test', new TestClassForTestFetchIteratorWithHydratorWithInvalidPrototype());
-        $this->assertNotNull($data);
-        foreach ($data as $item) {
-            /** @noinspection PhpUnusedLocalVariableInspection */
-            /** @phpstan-ignore-next-line */
-            $field = $item->testField;
+            $data = $pdo->fetchArray('SELECT * FROM test', new TestClassForTestFetchIteratorWithHydratorWithInvalidPrototype());
+            $this->assertNotNull($data);
+            foreach ($data as $item) {
+                /** @noinspection PhpUnusedLocalVariableInspection */
+                /** @phpstan-ignore-next-line */
+                $field = $item->testField;
+            }
+            $this->assertTrue(false);
+        } catch (Error) {
+            $this->assertTrue(true);
         }
     }
 

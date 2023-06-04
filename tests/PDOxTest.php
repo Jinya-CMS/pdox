@@ -5,6 +5,7 @@ namespace Jinya\Tests;
 use Error;
 use Jinya\PDOx\Exceptions\InvalidQueryException;
 use Jinya\PDOx\Exceptions\NoResultException;
+use Jinya\PDOx\HydratorType;
 use Jinya\PDOx\PDOx;
 use Laminas\Hydrator\Strategy\BooleanStrategy;
 use PDOException;
@@ -179,6 +180,19 @@ class PDOxTest extends TestCase
     public function testFetchObjectWithHydratorNoStrategies(): void
     {
         $pdo = new PDOx('sqlite::memory:');
+        $pdo->exec('CREATE TABLE test (pkey_id int primary key)');
+        $pdo->exec('INSERT INTO test (pkey_id) VALUES (1)');
+
+        /** @var TestClassForTestFetchObjectWithHydrator $data */
+        $data = $pdo->fetchObject('SELECT * FROM test', new TestClassForTestFetchObjectWithHydrator());
+
+        $this->assertNotNull($data);
+        $this->assertEquals(1, $data->pkeyId);
+    }
+
+    public function testFetchObjectWithObjectPropertyHydrator(): void
+    {
+        $pdo = new PDOx('sqlite::memory:', options: [PDOx::PDOX_HYDRATOR_TYPE => HydratorType::ObjectPropertyHydrator]);
         $pdo->exec('CREATE TABLE test (pkey_id int primary key)');
         $pdo->exec('INSERT INTO test (pkey_id) VALUES (1)');
 

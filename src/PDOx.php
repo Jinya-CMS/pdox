@@ -5,7 +5,11 @@ namespace Jinya\PDOx;
 use Iterator;
 use Jinya\PDOx\Exceptions\InvalidQueryException;
 use Jinya\PDOx\Exceptions\NoResultException;
+use Laminas\Hydrator\AbstractHydrator;
+use Laminas\Hydrator\ArraySerializableHydrator;
+use Laminas\Hydrator\ClassMethodsHydrator;
 use Laminas\Hydrator\NamingStrategy\UnderscoreNamingStrategy;
+use Laminas\Hydrator\ObjectPropertyHydrator;
 use Laminas\Hydrator\ReflectionHydrator;
 use Laminas\Hydrator\Strategy\StrategyInterface;
 use PDO;
@@ -14,22 +18,29 @@ use function count;
 
 class PDOx extends PDO
 {
-    private bool $useReflectionHydrator;
+    private bool $useHydrator;
+    private HydratorType $hydratorType = HydratorType::ReflectionHydrator;
     private string $noResultBehavior = self::PDOX_NO_RESULT_BEHAVIOR_NULL;
 
     public const PDOX_NAMING_UNDERSCORE_TO_CAMELCASE = 'NAMING_UNDERSCORE_TO_CAMELCASE';
     public const PDOX_NO_RESULT_BEHAVIOR = 'PDOX_NO_RESULT_BEHAVIOR';
     public const PDOX_NO_RESULT_BEHAVIOR_NULL = 'PDOX_NO_RESULT_BEHAVIOR_NULL';
     public const PDOX_NO_RESULT_BEHAVIOR_EXCEPTION = 'PDOX_NO_RESULT_BEHAVIOR_EXCEPTION';
+    public const PDOX_HYDRATOR_TYPE = 'PDOX_HYDRATOR_TYPE';
 
     /**
      * Generates a new ReflectionHydrator
      *
-     * @return ReflectionHydrator
+     * @return AbstractHydrator
      */
-    private function getHydrator(): ReflectionHydrator
+    private function getHydrator(): AbstractHydrator
     {
-        $hydrator = new ReflectionHydrator();
+        $hydrator = match ($this->hydratorType) {
+            HydratorType::ArraySerializableHydrator => new ArraySerializableHydrator(),
+            HydratorType::ClassMethodsHydrator => new ClassMethodsHydrator(),
+            HydratorType::ObjectPropertyHydrator => new ObjectPropertyHydrator(),
+            HydratorType::ReflectionHydrator => new ReflectionHydrator(),
+        };
         $hydrator->setNamingStrategy(new UnderscoreNamingStrategy());
 
         return $hydrator;
@@ -40,19 +51,23 @@ class PDOx extends PDO
      * @param string $dsn
      * @param string|null $username
      * @param string|null $password
-     * @param array<string|int, string|int|bool>|null $options
+     * @param array<string|int, string|int|bool|HydratorType>|null $options
      */
     public function __construct(string $dsn, string $username = null, string $password = null, array $options = null)
     {
         parent::__construct($dsn, $username, $password, $options);
         if ($options && array_key_exists(self::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE, $options) && $options[self::PDOX_NAMING_UNDERSCORE_TO_CAMELCASE] === false) {
-            $this->useReflectionHydrator = false;
+            $this->useHydrator = false;
         } else {
-            $this->useReflectionHydrator = true;
+            $this->useHydrator = true;
         }
 
         if ($options && array_key_exists(self::PDOX_NO_RESULT_BEHAVIOR, $options) && $options[self::PDOX_NO_RESULT_BEHAVIOR] === self::PDOX_NO_RESULT_BEHAVIOR_EXCEPTION) {
             $this->noResultBehavior = self::PDOX_NO_RESULT_BEHAVIOR_EXCEPTION;
+        }
+        if ($options && array_key_exists(self::PDOX_HYDRATOR_TYPE, $options)) {
+            /** @phpstan-ignore-next-line */
+            $this->hydratorType = $options[self::PDOX_HYDRATOR_TYPE];
         }
     }
 
@@ -93,7 +108,7 @@ class PDOx extends PDO
         $stmt = $this->prepare($query);
         $result = $stmt->execute($parameters);
         if ($result) {
-            if ($this->useReflectionHydrator) {
+            if ($this->useHydrator) {
                 $data = $stmt->fetchAll(self::FETCH_ASSOC);
                 if (!is_array($data) || !$this->checkFetchObjectForCount($data)) {
                     return null;
@@ -134,7 +149,7 @@ class PDOx extends PDO
         $stmt = $this->prepare($query);
         $result = $stmt->execute($parameters);
         if ($result) {
-            if ($this->useReflectionHydrator) {
+            if ($this->useHydrator) {
                 $hydrator = $this->getHydrator();
                 $data = $stmt->fetchAll(self::FETCH_ASSOC);
                 if ($data !== false) {
@@ -176,7 +191,7 @@ class PDOx extends PDO
         $result = $stmt->execute($parameters);
         $items = [];
         if ($result) {
-            if ($this->useReflectionHydrator) {
+            if ($this->useHydrator) {
                 $data = $stmt->fetchAll(self::FETCH_ASSOC);
                 $hydrator = $this->getHydrator();
                 if ($data !== false) {

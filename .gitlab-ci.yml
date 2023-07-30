@@ -12,7 +12,7 @@
     - php composer-setup.php
     - php -r "unlink('composer-setup.php');"
     - php composer.phar install
-    - php composer.phar composer require --dev phpunit/phpunit phpunit/php-code-coverage
+    - php composer.phar require --dev phpunit/phpunit phpunit/php-code-coverage
 
 phpstan:
   extends:

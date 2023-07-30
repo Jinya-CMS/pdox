@@ -12,6 +12,7 @@
     - php composer-setup.php
     - php -r "unlink('composer-setup.php');"
     - php composer.phar install
+    - php composer.phar composer require --dev phpunit/phpunit phpunit/php-code-coverage
 
 phpstan:
   extends:
@@ -29,7 +30,7 @@ phpunit:
   image: quay.imanuel.dev/dockerhub/library---php:8.1-cli
   stage: test
   script:
-    - ./vendor/bin/phpunit --log-junit report.xml --configuration ./phpunit.xml
+    - ./vendor/bin/phpunit --log-junit report.xml --configuration ./phpunit.xml --coverage-text --coverage-cobertura=coverage.cobertura.xml
   artifacts:
     when: always
     paths:
@@ -37,3 +38,6 @@ phpunit:
     reports:
       junit:
         - report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.cobertura.xml

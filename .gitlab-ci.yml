@@ -12,7 +12,6 @@
     - php composer-setup.php
     - php -r "unlink('composer-setup.php');"
     - php composer.phar install
-    - php composer.phar require --dev phpunit/phpunit phpunit/php-code-coverage
 
 phpstan:
   extends:
@@ -40,4 +39,4 @@ phpunit:
         - report.xml
       coverage_report:
         coverage_format: cobertura
-        path: coverage.cobertura.xml
+        path: build/coverage.cobertura.xml

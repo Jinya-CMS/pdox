@@ -40,3 +40,21 @@ phpunit:
       coverage_report:
         coverage_format: cobertura
         path: build/coverage.cobertura.xml
+
+pages:
+  stage: deploy
+  image: ruby:latest
+  variables:
+    JEKYLL_ENV: production
+    LC_ALL: C.UTF-8
+  before_script:
+    - gem install bundler jekyll
+    - bundle update rb-inotify
+    - bundle install
+  script:
+    - bundle exec jekyll build -d public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH

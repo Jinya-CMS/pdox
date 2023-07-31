@@ -1,3 +1,8 @@
+---
+permalink: index.html
+layout: "default"
+---
+
 # PDOx
 
 PDOx is a small PDO extension that enables developers to simple run a single query to map a table to the desired object.

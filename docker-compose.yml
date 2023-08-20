@@ -6,6 +6,4 @@ volumes:
 
 services:
   pdox-test:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
+    image: harbor.ulbricht.casa/jinya/jinya-cms-php-base-test-image:latest

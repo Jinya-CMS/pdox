@@ -1,34 +1,15 @@
-.install-dependencies:
-  before_script:
-    - mkdir -p /usr/share/man/man1
-    - apt update
-    - apt install -y git wget libzip-dev sqlite3 libsqlite3-dev
-    - docker-php-ext-install zip
-    - docker-php-ext-install pdo pdo_sqlite
-    - pecl install pcov
-    - docker-php-ext-enable pcov
-    - php --version
-    - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-    - php composer-setup.php
-    - php -r "unlink('composer-setup.php');"
-    - php composer.phar install
-
 phpstan:
-  extends:
-    - .install-dependencies
-  image: quay.imanuel.dev/dockerhub/library---php:8.1-cli
+  image: harbor.ulbricht.casa/jinya/jinya-cms-php-base-test-image:latest
   stage: test
-  services:
-    - docker:dind
   script:
+    - composer install
     - ./vendor/bin/phpstan --no-progress analyze ./src ./tests
 
 phpunit:
-  extends:
-    - .install-dependencies
-  image: quay.imanuel.dev/dockerhub/library---php:8.1-cli
+  image: harbor.ulbricht.casa/jinya/jinya-cms-php-base-test-image:latest
   stage: test
   script:
+    - composer install
     - ./vendor/bin/phpunit --log-junit report.xml --configuration ./phpunit.xml --coverage-text --coverage-cobertura=build/coverage.cobertura.xml
   artifacts:
     when: always
@@ -43,7 +24,7 @@ phpunit:
 
 pages:
   stage: deploy
-  image: ruby:latest
+  image: harbor.ulbricht.casa/proxy/library/ruby:latest
   variables:
     JEKYLL_ENV: production
     LC_ALL: C.UTF-8

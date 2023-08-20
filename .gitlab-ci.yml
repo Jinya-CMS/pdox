@@ -10,6 +10,7 @@ phpunit:
   stage: test
   script:
     - composer install
+    - install-php-extensions pdo pdo_sqlite pcov
     - ./vendor/bin/phpunit --log-junit report.xml --configuration ./phpunit.xml --coverage-text --coverage-cobertura=build/coverage.cobertura.xml
   artifacts:
     when: always

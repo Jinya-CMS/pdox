@@ -7,3 +7,5 @@ volumes:
 services:
   pdox-test:
     image: harbor.ulbricht.casa/jinya/jinya-cms-php-base-test-image:latest
+    volumes:
+      - .:/var/www/html

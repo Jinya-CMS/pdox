@@ -1,0 +1,12 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+:root {
+  --clr-a-text: #386EA8;
+
+  @media screen and (prefers-color-scheme: dark) {
+    --clr-a-text: #306094;
+  }
+}

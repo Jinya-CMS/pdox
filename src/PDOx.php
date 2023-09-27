@@ -13,6 +13,7 @@ use Laminas\Hydrator\ObjectPropertyHydrator;
 use Laminas\Hydrator\ReflectionHydrator;
 use Laminas\Hydrator\Strategy\StrategyInterface;
 use PDO;
+
 use function array_key_exists;
 use function count;
 
@@ -99,7 +100,7 @@ class PDOx extends PDO
      * @param object $prototype
      * @param array<int|string, mixed>|null $parameters
      * @param StrategyInterface[] $strategies
-     * @return mixed
+     * @return mixed|null
      * @throws InvalidQueryException
      * @throws NoResultException
      */
@@ -121,7 +122,7 @@ class PDOx extends PDO
 
                 $prototypeClass = get_class($prototype);
 
-                return $hydrator->hydrate($data[0], new $prototypeClass);
+                return $hydrator->hydrate($data[0], new $prototypeClass());
             }
 
             $stmt->setFetchMode(self::FETCH_CLASS, get_class($prototype));
@@ -159,7 +160,7 @@ class PDOx extends PDO
                     $prototypeClass = get_class($prototype);
 
                     foreach ($data as $item) {
-                        yield $hydrator->hydrate($item, new $prototypeClass);
+                        yield $hydrator->hydrate($item, new $prototypeClass());
                     }
                 }
             } else {
@@ -201,7 +202,7 @@ class PDOx extends PDO
                     $prototypeClass = get_class($prototype);
 
                     foreach ($data as $item) {
-                        $items[] = $hydrator->hydrate($item, new $prototypeClass);
+                        $items[] = $hydrator->hydrate($item, new $prototypeClass());
                     }
 
                     return $items;

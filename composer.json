@@ -6,7 +6,7 @@
         "ext-sqlite3": "*",
         "ext-pdo_sqlite": "*",
         "phpstan/phpstan": "1.10.35",
-        "phpunit/phpunit": "10.3.5",
+        "phpunit/phpunit": "10.4.1",
         "laravel/pint": "v1.13.2"
     },
     "license": "MIT",

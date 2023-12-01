@@ -1,3 +1,5 @@
 parameters:
   level: 9
   checkGenericClassInNonGenericObjectType: false
+  bootstrapFiles:
+    - tools/phpunit

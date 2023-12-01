@@ -14,11 +14,10 @@ stages:
   - deploy
 
 pint:
-  extends: 
+  extends:
     - .install-dependencies
   stage: lint
   script:
-    - composer install
     - ./vendor/bin/pint --test
 
 phpstan:
@@ -26,7 +25,6 @@ phpstan:
     - .install-dependencies
   stage: lint
   script:
-    - composer install
     - ./tools/phpstan --no-progress analyze ./src ./tests
 
 phpunit:
@@ -34,7 +32,6 @@ phpunit:
     - .install-dependencies
   stage: test
   script:
-    - composer install
     - ./tools/phpunit --log-junit report.xml --configuration ./phpunit.xml --coverage-text --coverage-cobertura=build/coverage.cobertura.xml
   artifacts:
     when: always

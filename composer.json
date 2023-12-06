@@ -5,7 +5,7 @@
     "require-dev": {
         "ext-sqlite3": "*",
         "ext-pdo_sqlite": "*",
-        "laravel/pint": "v1.13.6"
+        "laravel/pint": "v1.13.7"
     },
     "license": "MIT",
     "autoload": {
